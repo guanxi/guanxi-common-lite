@@ -16,6 +16,9 @@
 
 package org.guanxi.common;
 
+import sun.misc.BASE64Decoder;
+
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -91,7 +94,13 @@ public class Bag {
           inSessionID = false;
         }
         if (inSAMLResponse) {
-          setSamlResponse(Utils.decodeBase64(token));
+          BASE64Decoder decoder = new BASE64Decoder();
+          try {
+            String decodedToken = new String(decoder.decodeBuffer(token));
+            setSamlResponse(decodedToken);
+          }
+          catch(IOException ioe) {
+          }
           inSAMLResponse = false;
         }
         if (inAttributeName) {
