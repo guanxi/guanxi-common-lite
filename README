@@ -1,5 +1,5 @@
-Guanxi::Common
-==============
+Guanxi::Common::Lite
+====================
 
 o Introduction
 o Building
@@ -9,16 +9,15 @@ o Donations
 
 Introduction
 ------------
-The Guanxi Common module provides shared services to the other Guanxi modules
-such as the Identity Provider and Service Provider. It's also a useful Java
-toolkit for various things such as custom SSL handling and crytopgraphy.
+The Guanxi Common Lite module provides shared services to the other Guanxi modules
+such as the Identity Provider and Service Provider. It has no dependencies other
+than the standard Java libraries. For security and crytopgrahic functionality, the
+Guanxi Common module should be used.
 
 Building
 --------
-git clone http://github.com/guanxi/guanxi-core.git
-git clone http://github.com/guanxi/guanxi-beans.git
-git clone http://github.com/guanxi/guanxi-common.git
-cd guanxi-common
+git clone http://github.com/guanxi/guanxi-common-lite.git
+cd guanxi-common-lite
 mvn clean install
 
 More information
@@ -38,7 +37,7 @@ Mozilla Public License for details.
 
 Donations
 ---------
-If you use Guanxi::Common and find it useful, please think about donating
+If you use Guanxi::Common::Lite and find it useful, please think about donating
 to support the development of the module. The link to donate to the Guanxi
 project can be found on the module's page on GitHub:
 http://github.com/guanxi/guanxi-common
