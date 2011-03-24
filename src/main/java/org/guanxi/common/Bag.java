@@ -19,6 +19,9 @@ package org.guanxi.common;
 import sun.misc.BASE64Decoder;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -104,11 +107,15 @@ public class Bag {
           inSAMLResponse = false;
         }
         if (inAttributeName) {
-          attributeName = token;
+          try {
+            attributeName = URLDecoder.decode(token, "UTF-8");
+          } catch(UnsupportedEncodingException uee) {}
           inAttributeName = false;
         }
         if (inAttributeValue) {
-          addAttribute(attributeName, token);
+          try {
+            addAttribute(attributeName, URLDecoder.decode(token, "UTF-8"));
+          } catch(UnsupportedEncodingException uee) {}
           inAttributeValue = false;
         }
       }
@@ -239,8 +246,12 @@ public class Bag {
       value = getAttributeValue(name);
       if (!first) json += ",";
       json += "\"attribute\": {";
-      json += "\"attributeName\": " + "\"" + name + "\",";
-      json += "\"attributeValue\": " + "\"" + value + "\"";
+      try {
+        json += "\"attributeName\": " + "\"" + URLEncoder.encode(name, "UTF-8") + "\",";
+        json += "\"attributeValue\": " + "\"" + URLEncoder.encode(value, "UTF-8") + "\"";
+      }
+      catch(UnsupportedEncodingException uee) {
+      }
       json += "}";
       first = false;
     }
