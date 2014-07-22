@@ -12,7 +12,7 @@
   <name>guanxi-common-lite</name>
   <groupId>org.guanxi</groupId>
   <artifactId>guanxi-common-lite</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.4</version>
 
   <organization>
     <name>UHI Millennium Institute</name>
