@@ -24,7 +24,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-import sun.misc.BASE64Decoder;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The Bag contains SAML attributes as convenience objects (Strings). The Bag sits in a Pod which
@@ -106,12 +107,13 @@ public class Bag {
             inUnsolicitedMode = false;
           }
         if (inSAMLResponse) {
-          BASE64Decoder decoder = new BASE64Decoder();
+          //BASE64Decoder decoder = new BASE64Decoder();
           try {
-            String decodedToken = new String(decoder.decodeBuffer(token));
+            //String decodedToken = new String(decoder.decodeBuffer(token));
+			String decodedToken = new String(Base64.getMimeDecoder().decode(token), StandardCharsets.UTF_8);
             setSamlResponse(decodedToken);
           }
-          catch(IOException ioe) {
+          catch(IllegalArgumentException  ioe) {
           }
           inSAMLResponse = false;
         }
