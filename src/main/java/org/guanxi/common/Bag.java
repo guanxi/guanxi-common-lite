@@ -16,8 +16,6 @@
 
 package org.guanxi.common;
 
-import sun.misc.BASE64Decoder;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -25,6 +23,9 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The Bag contains SAML attributes as convenience objects (Strings). The Bag sits in a Pod which
@@ -45,6 +46,8 @@ public class Bag {
   private Hashtable<String, String> attributes = null;
   /** The session ID associated with this bag */
   private String sessionID = null;
+  /** If this bag is for an unsolicited response */
+  private boolean unsolicitedMode = false;
 
   /**
    * Default constructor
@@ -64,7 +67,7 @@ public class Bag {
     String token = null;
     String attributeName = null;
     boolean inSessionID = false, inSAMLResponse = false,
-            inAttributeName = false, inAttributeValue = false;
+            inAttributeName = false, inAttributeValue = false, inUnsolicitedMode = false;
 
     StringTokenizer st = new StringTokenizer(json, "\" ");
     while (st.hasMoreTokens()) {
@@ -82,6 +85,9 @@ public class Bag {
       else if (token.equals("sessionID")) {
         inSessionID = true;
       }
+      else if (token.equals("unsolicitedMode")) {
+    	  inUnsolicitedMode = true;
+        }
       else if (token.equals("samlResponse")) {
         inSAMLResponse = true;
       }
@@ -96,13 +102,18 @@ public class Bag {
           setSessionID(token);
           inSessionID = false;
         }
+        if (inUnsolicitedMode) {
+            setUnsolicitedMode(Boolean.parseBoolean(token));
+            inUnsolicitedMode = false;
+          }
         if (inSAMLResponse) {
-          BASE64Decoder decoder = new BASE64Decoder();
+          //BASE64Decoder decoder = new BASE64Decoder();
           try {
-            String decodedToken = new String(decoder.decodeBuffer(token));
+            //String decodedToken = new String(decoder.decodeBuffer(token));
+			String decodedToken = new String(Base64.getMimeDecoder().decode(token), StandardCharsets.UTF_8);
             setSamlResponse(decodedToken);
           }
-          catch(IOException ioe) {
+          catch(IllegalArgumentException  ioe) {
           }
           inSAMLResponse = false;
         }
@@ -208,8 +219,23 @@ public class Bag {
    * @return the session ID
    */
   public String getSessionID() { return sessionID; }
+  
+  
+  /**
+   * Gets the unsolicited mode flag for the bag
+   * 
+   * @return the unsolicited mode flag
+   */
+  public boolean isUnsolicitedMode() { return unsolicitedMode; }
 
   /**
+   * Sets the unsolicited mode flag
+   * 
+   * @param unsolicitedMode the unsolicited mode flag
+   */
+  public void setUnsolicitedMode(boolean unsolicitedMode) { this.unsolicitedMode = unsolicitedMode;}
+
+/**
    * Emits the Bag as JSON
    *
    * @return the Bag in JSON format:
@@ -235,6 +261,7 @@ public class Bag {
     String json = "{";
     json += "\"bag\": {";
     json += "\"sessionID\": \"" + getSessionID() + "\",";
+    json += "\"unsolicitedMode\": \"" + isUnsolicitedMode() + "\",";
     json += "\"samlResponse\": \"" + getSamlResponse() + "\",";
     json += "\"attributes\": [";
 
